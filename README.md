@@ -7,7 +7,7 @@ The project follows a layered architecture consisting of the API layer, Service 
 
 ### Set up and run the application:
 ``
-cd target  
+cd target    
 java -jar demo-0.0.1-SNAPSHOT.jar  
 ``
 
