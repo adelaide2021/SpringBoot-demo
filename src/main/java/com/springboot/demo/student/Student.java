@@ -3,12 +3,20 @@ package com.springboot.demo.student;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 //map Student class in table to database
-@Entity
-@Table
+@Entity(name = "Student")
+@Table(
+        name = "student",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "student_email_unique", columnNames = "email")
+        }
+)
 public class Student {
+    // 指定primary key
     @Id
+    // 生成用于id的递增序列
     @SequenceGenerator(
             name = "student_sequence",
             sequenceName = "student_sequence",
@@ -18,28 +26,40 @@ public class Student {
             strategy = GenerationType.SEQUENCE,
             generator = "student_sequence"
     )
+    @Column(
+            name = "id",
+            updatable = false
+    )
     private Long id;
+    @Column(
+          nullable = false,
+          columnDefinition = "TEXT"
+    )
     private String name;
+    @Column(
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String email;
     private LocalDate dob;
+    // age不需要是一个column，可以计算得出
+    @Transient
     private Integer age;
 
     public Student() {
     }
 
-    public Student(Long id, String name, String email, LocalDate dob, Integer age) {
+    public Student(Long id, String name, String email, LocalDate dob) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.dob = dob;
-        this.age = age;
     }
 
-    public Student(String name, String email, LocalDate dob, Integer age) {
+    public Student(String name, String email, LocalDate dob) {
         this.name = name;
         this.email = email;
         this.dob = dob;
-        this.age = age;
     }
 
     public Long getId() {
@@ -58,8 +78,9 @@ public class Student {
         return dob;
     }
 
+    // 对应 transient 计算 age
     public Integer getAge() {
-        return age;
+        return Period.between(dob, LocalDate.now()).getYears();
     }
 
     public void setId(Long id) {
